@@ -1,0 +1,35 @@
+name: Build Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build project
+      run: npm run build
+    
+    - name: Check build output
+      run: |
+        if [ -d ".next" ]; then
+          echo "✅ Build successful - .next directory exists"
+        else
+          echo "❌ Build failed - .next directory missing"
+          exit 1
+        fi
